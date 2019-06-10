@@ -1,10 +1,12 @@
 defmodule Metrics.Meetup.Importer do
+  alias Metrics.Events
+
   @host "stream.meetup.com"
   @path "/2/rsvps"
 
   # in order to add to `application` supervision tree
   def start_link(_opts) do
-    Task.start_link(fn -> run(fn _rsvp -> IO.inspect(:rsvp) end) end)
+    Task.start_link(__MODULE__, :run, [&save_rsvp/1])
   end
 
   def run(fun, opts \\ []) do
@@ -24,6 +26,18 @@ defmodule Metrics.Meetup.Importer do
 
   defp do_loop_recv(_, _, :once), do: :ok
   defp do_loop_recv(socket, fun, opts), do: loop_recv(socket, fun, opts)
+
+  defp save_rsvp(
+         %{"rsvp_id" => id, "mtime" => mtimestamp, "member" => %{"member_id" => member_id}} = rsvp
+       ) do
+    rsvp
+    |> Map.merge(%{
+      "member_id" => member_id,
+      "id" => id,
+      "mtime" => DateTime.from_unix!(mtimestamp, :millisecond)
+    })
+    |> Events.create_rsvp()
+  end
 
   def child_spec(opts) do
     %{

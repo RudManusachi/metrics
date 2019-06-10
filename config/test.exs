@@ -14,5 +14,6 @@ config :metrics, MetricsWeb.Endpoint,
   http: [port: 4002],
   server: false
 
+config :metrics, :enable_rsvp_importer, false
 # Print only warnings and errors during test
 config :logger, level: :warn

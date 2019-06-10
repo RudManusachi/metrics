@@ -11,8 +11,7 @@ defmodule Metrics.Application do
       # Start the Ecto repository
       Metrics.Repo,
       # Start the endpoint when the application starts
-      MetricsWeb.Endpoint,
-      Metrics.Meetup.Importer
+      MetricsWeb.Endpoint
       # Starts a worker by calling: Metrics.Worker.start_link(arg)
       # {Metrics.Worker, arg},
     ]
@@ -20,7 +19,13 @@ defmodule Metrics.Application do
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
     opts = [strategy: :one_for_one, name: Metrics.Supervisor]
-    Supervisor.start_link(children, opts)
+    Supervisor.start_link(children ++ custom_worker(), opts)
+  end
+
+  defp custom_worker() do
+    if Application.get_env(:metrics, :enable_rsvp_importer, true),
+      do: [Metrics.Meetup.Importer],
+      else: []
   end
 
   # Tell Phoenix to update the endpoint configuration
