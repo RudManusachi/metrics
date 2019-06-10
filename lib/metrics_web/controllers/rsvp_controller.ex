@@ -3,7 +3,8 @@ defmodule MetricsWeb.RSVPController do
 
   alias Metrics.Events
 
-  def index(conn, _args) do
-    json(conn, Events.list_rsvps())
+  def index(conn, params) do
+    {:ok, rsvps} = Events.list_rsvps(params)
+    json(conn, rsvps)
   end
 end

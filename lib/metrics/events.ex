@@ -17,8 +17,47 @@ defmodule Metrics.Events do
       [%RSVP{}, ...]
 
   """
-  def list_rsvps do
-    Repo.all(RSVP)
+  def list_rsvps(params) do
+    rsvps =
+      params
+      |> filter()
+      |> Repo.all()
+
+    {:ok, rsvps}
+  end
+
+  defp filter(query_params) do
+    query_params
+    |> Map.to_list()
+    |> Enum.reduce(base_query(), &filter_by/2)
+  end
+
+  defp filter_by({"range", [from, to]}, q) do
+    from(rsvp in q,
+      where:
+        ^DateTime.from_unix!(from, :millisecond) <= rsvp.mtime and
+          rsvp.mtime <= ^DateTime.from_unix!(to, :millisecond)
+    )
+  end
+
+  defp filter_by({"response", response}, q) do
+    from(rsvp in q,
+      where: rsvp.response == ^response
+    )
+  end
+
+  defp filter_by({"time_bucket", bucket}, q) do
+    from(rsvp in q,
+      select: [fragment("time_bucket('1 minute', ?) as bucket", rsvp.mtime), count(rsvp.id)],
+      group_by: fragment("bucket"),
+      order_by: [desc: fragment("bucket")]
+    )
+  end
+
+  defp filter_by(_, q), do: q
+
+  defp base_query() do
+    from(r in RSVP)
   end
 
   @doc """

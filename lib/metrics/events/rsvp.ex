@@ -20,5 +20,7 @@ defmodule Metrics.Events.RSVP do
     |> cast(attrs, [:member_id, :id, :guests, :response, :mtime])
     |> validate_required([:member_id, :id, :guests, :response, :mtime])
     |> unique_constraint(:id)
+    |> unique_constraint(:mtime)
+    |> unique_constraint(:primary_index, name: :_hyper_1_1_chunk_rsvps_mtime_id_index)
   end
 end
