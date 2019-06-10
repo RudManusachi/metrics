@@ -23,3 +23,10 @@ services:
     volumes:
       - .:/workspace
     command: sleep infinity
+  grafana:
+    image: grafana/grafana
+    container_name: metrics_grafana
+    ports:
+      - 3000:3000
+    depends_on:
+      - postgres
