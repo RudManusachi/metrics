@@ -11,7 +11,8 @@ defmodule Metrics.Application do
       # Start the Ecto repository
       Metrics.Repo,
       # Start the endpoint when the application starts
-      MetricsWeb.Endpoint
+      MetricsWeb.Endpoint,
+      Metrics.Meetup.Importer
       # Starts a worker by calling: Metrics.Worker.start_link(arg)
       # {Metrics.Worker, arg},
     ]
