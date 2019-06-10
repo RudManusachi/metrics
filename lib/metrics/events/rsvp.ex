@@ -2,6 +2,8 @@ defmodule Metrics.Events.RSVP do
   use Ecto.Schema
   import Ecto.Changeset
 
+  @derive {Jason.Encoder, only: [:response, :mtime, :guests, :id]}
+
   @primary_key {:id, :id, []}
   schema "rsvps" do
     field :guests, :integer
