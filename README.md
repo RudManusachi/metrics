@@ -4,7 +4,7 @@ To start your Phoenix server:
 
   * make sure you have [docker](https://docs.docker.com/install/) and [docker-compose](https://docs.docker.com/compose/install/) installed
   ```
-  docker-compose up -d`
+  docker-compose up -d
   
   docker exec -it -w /workspace metrics_app /bin/bash
   ```
